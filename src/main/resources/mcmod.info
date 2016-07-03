@@ -1,0 +1,18 @@
+[
+{
+  "modid": "petrogen",
+  "name": "Petroleum Generator",
+  "description": "BC/IC crossover mod. Adds a Petroleum Generator that produces EU directly from Buildcraft Fuel/Oil, based heavily on SirSengir's Forestry BioGenerator.",
+  "version": "1.2.1",
+  "mcversion": "1.7.10",
+  "url": "https://github.com/chrisduran/petroleumgenerator",
+  "updateUrl": "",
+  "authorList": ["xaniox", "DrCeph"],
+  "credits": "Alt. textures by @mjramonru",
+  "logoFile": "",
+  "screenshots": [],
+  "requiredMods": [ "Forge", "BuildCraft|Core", "BuildCraft|Energy", "IC2" ],
+  "dependencies": [ "BuildCraft|Core", "BuildCraft|Energy", "IC2", "Forestry", "TC" ],
+  "useDependencyInformation": "true"
+}
+]
