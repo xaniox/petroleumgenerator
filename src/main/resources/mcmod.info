@@ -12,7 +12,7 @@
   "logoFile": "",
   "screenshots": [],
   "requiredMods": [ "Forge", "BuildCraft|Core", "BuildCraft|Energy", "IC2" ],
-  "dependencies": [ "BuildCraft|Core", "BuildCraft|Energy", "IC2", "Forestry", "TC" ],
+  "dependencies": [ "BuildCraft|Core", "BuildCraft|Energy", "IC2", "Forestry", "TC", "Railcraft" ],
   "useDependencyInformation": "true"
 }
 ]

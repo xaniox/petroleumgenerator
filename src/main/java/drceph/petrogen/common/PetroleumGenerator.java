@@ -3,6 +3,7 @@ package drceph.petrogen.common;
 import org.apache.logging.log4j.Logger;
 
 import buildcraft.BuildCraftEnergy;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -14,6 +15,10 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 @Mod(modid = "petrogen", name = "Petroleum Generator", version = "1.2.1")
 public class PetroleumGenerator {
@@ -32,6 +37,7 @@ public class PetroleumGenerator {
     private static final int FUEL_STEP = 25000;
     private static final int OIL_GUI_OFFSET = 0;
     private static final int FUEL_GUI_OFFSET = 1;
+    private static final int CREOSOTE_GUI_OFFSET = 2;
 
     public static Logger logger;
 
@@ -84,8 +90,18 @@ public class PetroleumGenerator {
 				OIL_POWER, OIL_GUI_OFFSET);
 		PetroleumFuel fuelFuel = new PetroleumFuel(new ItemStack(BuildCraftEnergy.bucketFuel),
 				FUEL_STEP * fuelMultiplier, FUEL_POWER, FUEL_GUI_OFFSET);
+		
 		PetroleumFuel.registerFuel(oilFuel);
 		PetroleumFuel.registerFuel(fuelFuel);
+		
+		if (Loader.isModLoaded("Railcraft")) {
+			//Add creosote oil as fuel
+			Fluid creosote = FluidRegistry.getFluid("creosote");
+	        FluidStack creosoteStack = new FluidStack(creosote, FluidContainerRegistry.BUCKET_VOLUME);
+	        
+			PetroleumFuel creosoteFuel = new PetroleumFuel(creosoteStack, 5000, 5, CREOSOTE_GUI_OFFSET);
+			PetroleumFuel.registerFuel(creosoteFuel);
+		}
         
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
     }
