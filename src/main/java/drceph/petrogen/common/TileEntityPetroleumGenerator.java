@@ -29,7 +29,7 @@ public class TileEntityPetroleumGenerator extends TileEntity
 	private static final int MAX_CHARGE = 30000;
 	public static final int FUEL_GAUGE_SCALE = 60;
 	public static final int ENERGY_GAUGE_SCALE = 24;
-	public static final int SLOT_COUNT = 1;
+	public static final int SLOT_COUNT = 2;
 
 	private int amount;
 	private int charge;
@@ -296,19 +296,24 @@ public class TileEntityPetroleumGenerator extends TileEntity
 	private boolean fillTankFromInventory(ItemStack itemStack) {
 		boolean changed = false;
 		
+		if (itemStack == null) {
+			return changed;
+		}
+		
 		FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(itemStack);
+		Item item = itemStack.getItem();
+		
 		if (fluid == null) {
-			if (itemStack == null) {
-				return changed;
-			}
-			
-			Item item = itemStack.getItem();
 			if (!(item instanceof IFluidContainerItem)) {
 				return changed;
 			}
 			
 			IFluidContainerItem containerItem = (IFluidContainerItem) item;
 			fluid = containerItem.getFluid(itemStack);
+			
+			if (fluid == null) {
+				return changed;
+			}
 		}
 
 		if (this.fuel == null && PetroleumFuel.isValidFuel(fluid.getFluidID())) {
@@ -316,21 +321,58 @@ public class TileEntityPetroleumGenerator extends TileEntity
 		}
 
 		if (isCurrentFuel(fluid)) {
-			this.fill(fluid, true);
+			boolean doFill = false;
+			
 			if (FluidContainerRegistry.isBucket(itemStack)) {
-				this.inventory[0] = itemStack.getItem().getContainerItem(itemStack);
-			} else {
-				decrStackSize(0, 1);
+				ItemStack emptyBucket = itemStack.getItem().getContainerItem(itemStack);
+				ItemStack otherBuckets = inventory[1];
+				
+				if (otherBuckets == null) {
+					inventory[0] = null;
+					inventory[1] = emptyBucket;
+					doFill = true;
+				} else if (item.getContainerItem() == otherBuckets.getItem()) {
+					int stackLimit = otherBuckets.getItem().getItemStackLimit(otherBuckets);
+					
+					if (otherBuckets.stackSize < stackLimit) {
+						otherBuckets.stackSize++;
+						inventory[0] = null;
+						inventory[1] = otherBuckets;
+						doFill = true;
+					}
+				}
+			} else if (item instanceof IFluidContainerItem) {		
+				ItemStack emptyContainer = new ItemStack(item);
+				ItemStack otherEmptyContainers = inventory[1];
+				
+				if (otherEmptyContainers == null) {
+					decrStackSize(0, 1);
+					inventory[1] = emptyContainer;
+					doFill = true;
+				} else if (item == otherEmptyContainers.getItem()) {
+					int stackLimit = otherEmptyContainers.getItem().getItemStackLimit(otherEmptyContainers);
+					
+					if (otherEmptyContainers.stackSize < stackLimit) {
+						decrStackSize(0, 1);
+						otherEmptyContainers.stackSize++;
+						inventory[1] = otherEmptyContainers;
+						doFill = true;
+					}
+				}
 			}
-
-			changed = true;
+			
+			if (doFill) {
+				fill(fluid, true);
+				markDirty();
+				changed = true;
+			}
 		}
 
 		return changed;
 	}
 
 	private boolean isCurrentFuel(FluidStack resource) {
-		if (fuel == null || fuel.getFluidId() != resource.getFluidID()) {
+		if (fuel == null || resource == null || fuel.getFluidId() != resource.getFluidID()) {
 			return false;
 		}
 		return true;

@@ -26,7 +26,9 @@ public class ContainerPetroleumGenerator extends Container {
 	}
 
 	private void layoutContainer(IInventory playerInventory, IInventory inventory) {
-		addSlotToContainer(new Slot(inventory, 0, 22, 36));
+		addSlotToContainer(new Slot(inventory, 0, 22, 14));
+		addSlotToContainer(new ReadOnlySlot(inventory, 1, 22, 57));
+		
 		for (int inventoryRow = 0; inventoryRow < 3; inventoryRow++) {
 			for (int inventoryColumn = 0; inventoryColumn < 9; inventoryColumn++) {
 				addSlotToContainer(new Slot(playerInventory, inventoryColumn + inventoryRow * 9 + 9,
