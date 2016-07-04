@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-@Mod(modid = "petrogen", name = "Petroleum Generator", version = "1.2.1")
+@Mod(modid = "petrogen", name = "Petroleum Generator", version = "1.3")
 public class PetroleumGenerator {
 
     @Mod.Instance("petrogen")
