@@ -31,10 +31,16 @@ public class PetroleumGenerator {
 
     private static final int DEFAULT_OIL_MULTIPLIER = 3;
     private static final int DEFAULT_FUEL_MULTIPLIER = 12;
+    private static final int DEFAULT_CREOSOTE_MULTIPLIER = 1;
+    
     private static final int OIL_POWER = 10;
     private static final int FUEL_POWER = 25;
+    private static final int CREOSOTE_POWER = 5;
+    
     private static final int OIL_STEP = 10000;
     private static final int FUEL_STEP = 25000;
+    private static final int CREOSOTE_STEP = 5000;
+    
     private static final int OIL_GUI_OFFSET = 0;
     private static final int FUEL_GUI_OFFSET = 1;
     private static final int CREOSOTE_GUI_OFFSET = 2;
@@ -43,6 +49,7 @@ public class PetroleumGenerator {
 
     private int fuelMultiplier;
     private int oilMultiplier;
+    private int creosoteMultiplier;
     private int bituminousBurnTime;
 
     private Block petroleumGeneratorBlock;
@@ -55,11 +62,14 @@ public class PetroleumGenerator {
 
         configuration.addCustomCategoryComment(Configuration.CATEGORY_GENERAL, "Oil is multiplied by 10,000 for"
         		+ " the total EU/bucket (Default: 10,000 x 3 : 30,000 EU) \nFuel is multiplied by 25,000 for the"
-        		+ " total EU/bucket (Default: 25,000 x 12 : 300,000 EU)");
+        		+ " total EU/bucket (Default: 25,000 x 12 : 300,000 EU)"
+        		+ "\nCreosote oil is multiplied by 5,000 for total EU/bucket (Default: 5,000 x 1 : 5,000 EU)");
         oilMultiplier = configuration.get(Configuration.CATEGORY_GENERAL, "oil_multiplier", DEFAULT_OIL_MULTIPLIER).getInt();
         oilMultiplier = Math.max(oilMultiplier, 1);
         fuelMultiplier = configuration.get(Configuration.CATEGORY_GENERAL, "fuel_multiplier", DEFAULT_FUEL_MULTIPLIER).getInt();
         fuelMultiplier = Math.max(fuelMultiplier, 1);
+        creosoteMultiplier = configuration.get(Configuration.CATEGORY_GENERAL, "creosote_multiplier", DEFAULT_CREOSOTE_MULTIPLIER).getInt();
+        creosoteMultiplier = Math.max(creosoteMultiplier, 1);
 
         bituminousBurnTime = configuration.get(Configuration.CATEGORY_GENERAL, "bituminous_sludge_burntime", 1200, "Default is 75%"
         		+ " of coal burntime - set to zero to disable use of sludge as a fuel\nThis feature is currently not available").getInt();
@@ -99,7 +109,8 @@ public class PetroleumGenerator {
 			Fluid creosote = FluidRegistry.getFluid("creosote");
 	        FluidStack creosoteStack = new FluidStack(creosote, FluidContainerRegistry.BUCKET_VOLUME);
 	        
-			PetroleumFuel creosoteFuel = new PetroleumFuel(creosoteStack, 5000, 5, CREOSOTE_GUI_OFFSET);
+			PetroleumFuel creosoteFuel = new PetroleumFuel(creosoteStack, CREOSOTE_STEP * creosoteMultiplier, 
+					CREOSOTE_POWER, CREOSOTE_GUI_OFFSET);
 			PetroleumFuel.registerFuel(creosoteFuel);
 		}
         
