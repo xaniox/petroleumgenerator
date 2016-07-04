@@ -5,6 +5,7 @@ import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,7 +23,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
 
 public class TileEntityPetroleumGenerator extends TileEntity
-		implements IInventory, IFluidTank, IFluidHandler, IEnergySource {
+		implements IInventory, IFluidTank, IFluidHandler, IEnergySource, ISidedInventory {
 
 	private static final int SOURCE_TIER_LV = 1;
 	private static final int MAX_VOLUME = FluidContainerRegistry.BUCKET_VOLUME * 10;
@@ -545,7 +546,19 @@ public class TileEntityPetroleumGenerator extends TileEntity
 	public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
 		if (slot == 0) {
 			FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(itemStack);
-			if (fluidStack == null || !PetroleumFuel.isValidFuel(fluidStack.getFluidID())) {
+			if (fluidStack == null) {
+				Item item = itemStack.getItem();
+				if (!(item instanceof IFluidContainerItem)) {
+					return false;
+				}
+				
+				fluidStack = ((IFluidContainerItem) item).getFluid(itemStack);
+				if (fluidStack == null) {
+					return false;
+				}
+			}
+			
+			if (!PetroleumFuel.isValidFuel(fluidStack.getFluidID())) {
 				return false;
 			}
 
@@ -570,6 +583,25 @@ public class TileEntityPetroleumGenerator extends TileEntity
 		double ratio = MAX_CHARGE / (double)ENERGY_GAUGE_SCALE;
 		double scaled_charge = charge / ratio;
 		return ((int) Math.round(scaled_charge));
+	}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int side) {		
+		if (side == 0 || side == 1) {
+			return new int[] {0};
+		} else {
+			return new int[] {1};
+		}
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack item, int side) {
+		return side <= 1 && slot == 0;
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack item, int side) {
+		return side >= 2 && slot == 1;
 	}
 
 }
